@@ -11,9 +11,23 @@ import BDBOAuth1Manager
 
 class TwitterClient: BDBOAuth1SessionManager {
     
+    static let logoutNotificationName = NSNotification.Name(rawValue: "UserDidLogout")
+    
     static let sharedInstance = TwitterClient(baseURL: URL(string: "https://api.twitter.com"),
                                               consumerKey: "x2udZxXL3OuzbRNFn1Al0hEYR",
                                               consumerSecret: "jDPRFna5DqzKiLnX54HsrPHXF0sBiIJZzMbySW6r32DDYJVjrp")!
+    
+    static var isLoggedIn: Bool {
+        get {
+            let defaults = UserDefaults.standard
+            return defaults.bool(forKey: "isLoggedIn")
+        }
+        set {
+            let defaults = UserDefaults.standard
+            defaults.set(newValue, forKey: "isLoggedIn")
+            defaults.synchronize()
+        }
+    }
     
     var loginSuccess: (() -> ())?
     var loginFailure: ((Error?) -> ())?
@@ -22,7 +36,7 @@ class TwitterClient: BDBOAuth1SessionManager {
         loginSuccess = success
         loginFailure = failure
         
-        deauthorize()
+        logoutWithoutNotification()
         fetchRequestToken(withPath: "oauth/request_token",
                           method: "GET",
                           callbackURL: URL(string: "twitter-iOS://oauth"),
@@ -48,10 +62,21 @@ class TwitterClient: BDBOAuth1SessionManager {
                          method: "POST",
                          requestToken: credential,
                          success: { (accessToken: BDBOAuth1Credential?) in
+                            TwitterClient.isLoggedIn = true
                             self.loginSuccess?()
             },
                          failure: { (error: Error?) in
                             self.loginFailure?(error)
         })
+    }
+    
+    func logout() {
+        logoutWithoutNotification()
+        NotificationCenter.default.post(name: TwitterClient.logoutNotificationName, object: nil)
+    }
+    
+    private func logoutWithoutNotification() {
+        TwitterClient.isLoggedIn = false
+        deauthorize()
     }
 }
