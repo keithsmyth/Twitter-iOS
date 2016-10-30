@@ -38,6 +38,16 @@ class Tweet {
         }
     }
     
+    var formattedTime: String? {
+        get {
+            if createdAt == nil {
+                return nil
+            }
+            let formatter = DateFormatter()
+            return formatter.string(from: createdAt!)
+        }
+    }
+    
     init(dict: NSDictionary) {
         user = User(dict: dict["user"] as! NSDictionary)
         text = dict["text"] as? String

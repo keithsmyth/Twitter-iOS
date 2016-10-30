@@ -41,6 +41,8 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = tweetsTableView.dequeueReusableCell(withIdentifier: "TweetTableViewCell", for: indexPath) as! TweetTableViewCell
         let tweet = tweets[indexPath.row]
         
+        cell.tweet = tweet
+        
         cell.retweetedLabel.isHidden = true
         
         if let profileImageUrl = tweet.user?.profileImageUrl {
@@ -81,8 +83,12 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let navController = segue.destination as! UINavigationController
-        let composeViewController = navController.topViewController as! ComposeViewController
-        composeViewController.delegate = self
+        if let composeViewController = navController.topViewController as? ComposeViewController {
+            composeViewController.delegate = self
+        } else if let detailsViewController = navController.topViewController as? DetailsViewController {
+            let cell = sender as? TweetTableViewCell
+            detailsViewController.tweet = cell?.tweet
+        }
     }
     
     func composeViewController(tweet text: String) {
