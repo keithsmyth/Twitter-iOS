@@ -22,7 +22,11 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         tweetsTableView.estimatedRowHeight = 120
         tweetsTableView.rowHeight = UITableViewAutomaticDimension
         
-        fetchTweets()
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(fetchTweets(refreshControl:)), for: UIControlEvents.valueChanged)
+        tweetsTableView.insertSubview(refreshControl, at: 0)
+        
+        fetchTweets(refreshControl: nil)
     }
     
     @IBAction func onLogout(_ sender: AnyObject) {
@@ -65,10 +69,11 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
-    func fetchTweets() {
+    func fetchTweets(refreshControl: UIRefreshControl?) {
         Tweet.getTweets(aSuccess: { (tweets: [Tweet]) in
             self.tweets = tweets
             self.tweetsTableView.reloadData()
+            refreshControl?.endRefreshing()
         }) { (error: Error?) in
             print("Error fetching tweets \(error?.localizedDescription)")
         }
