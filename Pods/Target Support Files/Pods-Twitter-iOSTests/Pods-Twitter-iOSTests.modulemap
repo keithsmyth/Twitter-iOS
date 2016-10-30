@@ -1,0 +1,6 @@
+framework module Pods_Twitter_iOSTests {
+  umbrella header "Pods-Twitter-iOSTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
