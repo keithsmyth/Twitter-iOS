@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TweetsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class TweetsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ComposeViewControllerDelegate {
     
     @IBOutlet weak var tweetsTableView: UITableView!
     
@@ -76,6 +76,24 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
             refreshControl?.endRefreshing()
         }) { (error: Error?) in
             print("Error fetching tweets \(error?.localizedDescription)")
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navController = segue.destination as! UINavigationController
+        let composeViewController = navController.topViewController as! ComposeViewController
+        composeViewController.delegate = self
+    }
+    
+    func composeViewController(tweet text: String) {
+        let twitterClient = TwitterClient.sharedInstance
+        twitterClient.postTweet(text: text,
+                                success: { (tweet: Tweet) in
+                                    self.tweets.insert(tweet, at: 0)
+                                    self.tweetsTableView.setContentOffset(CGPoint.zero, animated: true)
+                                    self.tweetsTableView.reloadData()
+        }) { (error: Error?) in
+            print("Error sending tweet \(error?.localizedDescription)")
         }
     }
 }

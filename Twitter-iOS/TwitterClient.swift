@@ -79,4 +79,16 @@ class TwitterClient: BDBOAuth1SessionManager {
         TwitterClient.isLoggedIn = false
         deauthorize()
     }
+    
+    func postTweet(text: String, success: @escaping ((Tweet) -> ()), failure: @escaping ((Error?) -> ())) {
+        let params = ["status": text]
+        post("1.1/statuses/update.json?",
+             parameters: params,
+             progress: nil,
+             success: { (task: URLSessionDataTask, response: Any?) in
+                success(Tweet(dict: response as! NSDictionary))
+        }) { (task: URLSessionDataTask?, error: Error) in
+            failure(error)
+        }
+    }
 }

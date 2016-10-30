@@ -25,4 +25,17 @@ class User {
         
         description = dict["description"] as? String
     }
+    
+    class func getCurrentUser(success: @escaping ((User) -> ()), failure: @escaping ((Error?) -> ())) {
+        let twitterClient = TwitterClient.sharedInstance;
+        twitterClient.get("1.1/account/verify_credentials.json",
+                          parameters: nil,
+                          progress: nil,
+                          success: { (task: URLSessionDataTask, response: Any?) in
+                            success(User(dict: response as! NSDictionary))
+        },
+                          failure: { (task: URLSessionDataTask?, error: Error) in
+                            failure(error)
+        })
+    }
 }
