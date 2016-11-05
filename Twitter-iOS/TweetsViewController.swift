@@ -12,7 +12,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     
     @IBOutlet weak var tweetsTableView: UITableView!
     
-    var tweets = [Tweet]()
+    var adapter: TableViewAdapter!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +26,8 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         refreshControl.addTarget(self, action: #selector(fetchTweets(refreshControl:)), for: UIControlEvents.valueChanged)
         tweetsTableView.insertSubview(refreshControl, at: 0)
         
+        navigationItem.title = adapter.title
+        adapter.tableView = tweetsTableView
         fetchTweets(refreshControl: nil)
     }
     
@@ -34,12 +36,12 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tweets.count
+        return adapter.tweets.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tweetsTableView.dequeueReusableCell(withIdentifier: "TweetTableViewCell", for: indexPath) as! TweetTableViewCell
-        let tweet = tweets[indexPath.row]
+        let tweet = adapter.tweets[indexPath.row]
         
         cell.tweet = tweet
         
@@ -71,14 +73,12 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func fetchTweets(refreshControl: UIRefreshControl?) {
-        Tweet.getTweets(aSuccess: { (tweets: [Tweet]) in
-            self.tweets = tweets
-            self.tweetsTableView.reloadData()
-            refreshControl?.endRefreshing()
-        }) { (error: Error?) in
-            print("Error fetching tweets \(error?.localizedDescription)")
-        }
+        adapter.fetchTweets(refreshControl: refreshControl)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -95,8 +95,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         let twitterClient = TwitterClient.sharedInstance
         twitterClient.postTweet(text: text,
                                 success: { (tweet: Tweet) in
-                                    self.tweets.insert(tweet, at: 0)
-                                    self.tweetsTableView.setContentOffset(CGPoint.zero, animated: true)
+                                    //self.adapter.tweets.insert(tweet, at: 0) // TODO: add tweet insert trick back to protocol
                                     self.tweetsTableView.reloadData()
         }) { (error: Error?) in
             print("Error sending tweet \(error?.localizedDescription)")

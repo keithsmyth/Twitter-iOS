@@ -15,18 +15,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
         if TwitterClient.isLoggedIn {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "TweetsNavigationController")
-            window?.rootViewController = viewController
+            let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
+            window!.rootViewController = mainViewController
         }
         
         NotificationCenter.default.addObserver(forName: TwitterClient.logoutNotificationName, object: nil, queue: OperationQueue.main) {
             (notification: Notification) in
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateInitialViewController()
-            self.window?.rootViewController = viewController
+            let loginViewController = storyboard.instantiateInitialViewController()
+            self.window!.rootViewController = loginViewController
         }
         
         return true

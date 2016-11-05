@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Tweet {
+@objc class Tweet: NSObject {
     var user: User?
     var text: String?
     var retweetCount: Int
@@ -62,7 +62,7 @@ class Tweet {
         }
     }
     
-    class func getTweets(aSuccess: @escaping (([Tweet]) -> ()), aFailure: @escaping ((Error?) -> ())) {
+    class func getHomeTimeline(aSuccess: @escaping (([Tweet]) -> ()), aFailure: @escaping ((Error?) -> ())) {
         let twitterClient = TwitterClient.sharedInstance
         twitterClient.get("1.1/statuses/home_timeline.json",
                           parameters: nil,
@@ -78,5 +78,39 @@ class Tweet {
                             aFailure(error)
         })
     }
+    
+    class func getUserTimeline(screenName: String, aSuccess: @escaping (([Tweet]) -> ()), aFailure: @escaping ((Error?) -> ())) {
+        let twitterClient = TwitterClient.sharedInstance
+        let params = ["screen_name": screenName]
+        twitterClient.get("1.1/statuses/user_timeline.json",
+                          parameters: params,
+                          progress: nil,
+                          success: { (task: URLSessionDataTask, response: Any?) in
+                            var tweets = [Tweet]()
+                            for dict in response as! [NSDictionary] {
+                                tweets.append(Tweet(dict: dict))
+                            }
+                            aSuccess(tweets)
+            },
+                          failure: { (task: URLSessionDataTask?, error: Error) in
+                            aFailure(error)
+        })
+    }
 
+    class func getMentionsTimeline(aSuccess: @escaping (([Tweet]) -> ()), aFailure: @escaping ((Error?) -> ())) {
+        let twitterClient = TwitterClient.sharedInstance
+        twitterClient.get("1.1/statuses/mentions_timeline.json",
+                          parameters: nil,
+                          progress: nil,
+                          success: { (task: URLSessionDataTask, response: Any?) in
+                            var tweets = [Tweet]()
+                            for dict in response as! [NSDictionary] {
+                                tweets.append(Tweet(dict: dict))
+                            }
+                            aSuccess(tweets)
+            },
+                          failure: { (task: URLSessionDataTask?, error: Error) in
+                            aFailure(error)
+        })
+    }
 }
