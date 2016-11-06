@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class ProfileAdapter: TableViewAdapter {
+class ProfileAdapter: NSObject, TableViewAdapter {
     
     var title = "Profile"
     
@@ -17,13 +17,33 @@ class ProfileAdapter: TableViewAdapter {
     
     var tweets = [Tweet]()
     
+    private var profileView: ProfileView?
+    
     func fetchTweets(refreshControl: UIRefreshControl?) {
-        Tweet.getUserTimeline(screenName: "TestSmyth", aSuccess: { (tweets: [Tweet]) in
+        User.getCurrentUser(success: { (user: User) in
+            self.fetchTweets(forUser: user.screenName!, refreshControl: refreshControl)
+            self.initProfileView(forUser: user)
+        }) { (error: Error?) in
+            print("Error fetching user \(error?.localizedDescription)")
+        }
+    }
+    
+    func fetchTweets(forUser screenName: String, refreshControl: UIRefreshControl?) {
+        Tweet.getUserTimeline(screenName: screenName, aSuccess: { (tweets: [Tweet]) in
             self.tweets = tweets
             self.tableView.reloadData()
             refreshControl?.endRefreshing()
         }) { (error: Error?) in
             print("Error fetching tweets \(error?.localizedDescription)")
         }
+    }
+    
+    func initProfileView(forUser user: User) {
+        if profileView != nil {
+            return
+        }
+        profileView = ProfileView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200))
+        profileView!.bind(user: user)
+        tableView.tableHeaderView = profileView!
     }
 }

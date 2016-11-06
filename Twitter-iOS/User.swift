@@ -12,7 +12,11 @@ class User {
     var name: String?
     var screenName: String?
     var profileImageUrl: URL?
-    var description: String?
+    var bannerImageUrl: URL?
+    var description: String
+    var tweetCount: Int
+    var followingCount: Int
+    var followersCount: Int
     
     init(dict: NSDictionary) {
         name = dict["name"] as? String
@@ -23,7 +27,17 @@ class User {
             profileImageUrl = URL(string: imageUrlString)
         }
         
-        description = dict["description"] as? String
+        let bannerUrlString = dict["profile_background_image_url_https"] as? String
+        if let bannerUrlString = bannerUrlString {
+            bannerImageUrl = URL(string: bannerUrlString)
+        }
+        
+        description = dict["description"] as? String ?? ""
+        
+        tweetCount = dict["listed_count"] as? Int ?? 0
+        followingCount = dict["friends_count"] as? Int ?? 0
+        followersCount = dict["followers_count"] as? Int ?? 0
+        
     }
     
     class func getCurrentUser(success: @escaping ((User) -> ()), failure: @escaping ((Error?) -> ())) {

@@ -49,7 +49,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         
         if let profileImageUrl = tweet.user?.profileImageUrl {
             cell.profileImage.setImageWith(profileImageUrl)
-            cell.profileImage.layer.cornerRadius = 8.0
+            cell.profileImage.layer.cornerRadius = 4.0
             cell.profileImage.clipsToBounds = true
             
         } else {

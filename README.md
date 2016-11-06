@@ -1,18 +1,18 @@
 # Project 4 - Twitter-iOS
 
-Time spent: **8** hours spent in total
+Time spent: **10** hours spent in total
 
 ## User Stories
 
 The following **required** functionality is completed:
 
-- [ ] Hamburger menu
+- [X] Hamburger menu
    - [X] Dragging anywhere in the view should reveal the menu.
    - [X] The menu should include links to your profile, the home timeline, and the mentions view.
    - [X] The menu can look similar to the example or feel free to take liberty with the UI.
-- [ ] Profile page
-   - [ ] Contains the user header view
-   - [ ] Contains a section with the users basic stats: # tweets, # following, # followers
+- [X] Profile page
+   - [X] Contains the user header view
+   - [X] Contains a section with the users basic stats: # tweets, # following, # followers
    - [X] Shows the user timeline
 - [ ] Home Timeline
    - [ ] Tapping on a user image should bring up that user's profile page
