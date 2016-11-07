@@ -11,7 +11,12 @@ import UIKit
 struct MenuItem {
     
     let title: String
-    let viewController: UIViewController
+    let viewController: UIViewController!
+    
+    init(_ title: String) {
+        self.title = title
+        viewController = nil
+    }
     
     init(_ title: String, storyboard: UIStoryboard, adapter: TableViewAdapter) {
         self.title = title
@@ -36,12 +41,14 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         // profile
-        menuItems.append(MenuItem("Profile", storyboard: storyboard, adapter: ProfileAdapter()))
+        menuItems.append(MenuItem("Profile", storyboard: storyboard, adapter: ProfileAdapter(forUser: nil)))
         // home
         let tweetsMenuItem = MenuItem("Home", storyboard: storyboard, adapter: TweetsAdapter())
         menuItems.append(tweetsMenuItem)
         // mentions
         menuItems.append(MenuItem("Mentions", storyboard: storyboard, adapter: MentionsAdapter()))
+        // logout
+        menuItems.append(MenuItem("Logout"))
         
         mainViewController.contentViewController = tweetsMenuItem.viewController
         
@@ -51,7 +58,6 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("cell count \(menuItems.count)")
         return menuItems.count
     }
     
@@ -63,6 +69,12 @@ class MenuViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        mainViewController.contentViewController = menuItems[indexPath.row].viewController
+        if indexPath.row == menuItems.count - 1 {
+            // logout
+            TwitterClient.sharedInstance.logout()
+        } else {
+            // open view controller
+            mainViewController.contentViewController = menuItems[indexPath.row].viewController
+        }
     }
 }

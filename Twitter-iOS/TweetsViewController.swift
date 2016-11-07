@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TweetsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ComposeViewControllerDelegate {
+class TweetsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ComposeViewControllerDelegate, TweetTableViewCellDelegate {
     
     @IBOutlet weak var tweetsTableView: UITableView!
     
@@ -31,10 +31,6 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         fetchTweets(refreshControl: nil)
     }
     
-    @IBAction func onLogout(_ sender: AnyObject) {
-        TwitterClient.sharedInstance.logout()
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return adapter.tweets.count
     }
@@ -43,6 +39,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = tweetsTableView.dequeueReusableCell(withIdentifier: "TweetTableViewCell", for: indexPath) as! TweetTableViewCell
         let tweet = adapter.tweets[indexPath.row]
         
+        cell.delegate = self
         cell.tweet = tweet
         
         cell.retweetedLabel.isHidden = true
@@ -100,5 +97,13 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         }) { (error: Error?) in
             print("Error sending tweet \(error?.localizedDescription)")
         }
+    }
+    
+    func tweetTableViewCell(onUserImageTapGesture user: User) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let profileViewController = storyboard.instantiateViewController(withIdentifier: "TweetsViewController") as! TweetsViewController
+        profileViewController.adapter = ProfileAdapter(forUser: user)
+        navigationController?.pushViewController(profileViewController, animated: true)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: adapter.title, style: .plain, target: nil, action: nil)
     }
 }

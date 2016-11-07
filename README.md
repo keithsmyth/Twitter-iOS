@@ -1,6 +1,6 @@
 # Project 4 - Twitter-iOS
 
-Time spent: **10** hours spent in total
+Time spent: **12** hours spent in total
 
 ## User Stories
 
@@ -14,8 +14,8 @@ The following **required** functionality is completed:
    - [X] Contains the user header view
    - [X] Contains a section with the users basic stats: # tweets, # following, # followers
    - [X] Shows the user timeline
-- [ ] Home Timeline
-   - [ ] Tapping on a user image should bring up that user's profile page
+- [X] Home Timeline
+   - [X] Tapping on a user image should bring up that user's profile page
 
 The following **optional** features are implemented:
 
@@ -36,8 +36,8 @@ The following **additional** features are implemented:
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-  1.
-  2.
+  1. My approach to nib (is correct?)
+  2. My approach to the hamburger(main) / menu view controllers. Why is the code so brittle?
 
 
 ## Video Walkthrough

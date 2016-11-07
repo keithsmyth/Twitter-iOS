@@ -17,9 +17,24 @@ class ProfileAdapter: NSObject, TableViewAdapter {
     
     var tweets = [Tweet]()
     
+    var user: User?
+    
     private var profileView: ProfileView?
     
+    init(forUser user: User?) {
+        self.user = user
+    }
+    
     func fetchTweets(refreshControl: UIRefreshControl?) {
+        if let user = user {
+            fetchTweets(forUser: user.screenName!, refreshControl: refreshControl)
+            initProfileView(forUser: user)
+        } else {
+            fetchCurrentUser(refreshControl: refreshControl)
+        }
+    }
+    
+    func fetchCurrentUser(refreshControl: UIRefreshControl?) {
         User.getCurrentUser(success: { (user: User) in
             self.fetchTweets(forUser: user.screenName!, refreshControl: refreshControl)
             self.initProfileView(forUser: user)

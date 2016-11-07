@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol TweetTableViewCellDelegate {
+    func tweetTableViewCell(onUserImageTapGesture user: User)
+}
+
 class TweetTableViewCell: UITableViewCell {
 
     @IBOutlet weak var retweetedLabel: UILabel!
@@ -21,5 +25,17 @@ class TweetTableViewCell: UITableViewCell {
     @IBOutlet weak var favoriteButton: UIButton!
     
     var tweet: Tweet?
+    var delegate: TweetTableViewCellDelegate?
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(onImageTapGesture(_:)))
+        profileImage.addGestureRecognizer(recognizer)
+    }
 
+    func onImageTapGesture(_ sender: UITapGestureRecognizer) {
+        if let user = tweet?.user {
+            delegate?.tweetTableViewCell(onUserImageTapGesture: user)
+        }
+    }
 }
